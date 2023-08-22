@@ -1,5 +1,5 @@
 {
-  "name": "mastermind",
+  "name": "express-api",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,7 +9,7 @@
     "lint": "eslint --fix ./src ./test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kevin Ruiz (https://github.com/kevinrzdz)",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
