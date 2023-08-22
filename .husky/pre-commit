@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# checks that commit message follows conventional commits config
+npx --no -- commitlint --edit ${1}
+
+# checks that code follows linter rules
+npm run lint
+
+# checks that all test are passed
+npm test
