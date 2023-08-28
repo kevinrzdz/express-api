@@ -6,8 +6,8 @@ const router = express.Router();
 await registerUser('kevin', '1234');
 
 router.route('/')
-  .get((_req, res) => res.send('GET Auth router')
-    .post((_request, response) => response.send('POST Auth router')));
+  .get((_req, res) => res.send('GET Auth router'))
+  .post((_req, res) => res.send('POST Auth router'));
 
 router.route('/login')
   .post(async (req, res) => {
