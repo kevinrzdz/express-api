@@ -1,5 +1,8 @@
 import request from 'supertest';
 import { app, server } from '../src/app.js';
+import { clearUsers, registerUser } from '../src/controllers/users.js';
+
+beforeAll(() => registerUser('kevin', '1234'));
 
 describe('/login endpoint testing suite', () => {
   it('POST should return 200 when successful login', async () => {
@@ -94,5 +97,6 @@ describe('/ endpoint testing suite', () => {
 });
 
 afterAll((done) => {
+  clearUsers();
   server.close(done);
 });
