@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../src/app';
+import { app, server } from '../src/app.js';
 
 describe('/login endpoint testing suite', () => {
   it('POST should return 200 when successful login', async () => {
@@ -91,4 +91,8 @@ describe('/ endpoint testing suite', () => {
     expect(response.status)
       .toBe(401);
   });
+});
+
+afterAll((done) => {
+  server.close(done);
 });
