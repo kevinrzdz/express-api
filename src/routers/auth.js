@@ -1,9 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { checkUserCredentials, registerUser } from '../controllers/users.js';
+import { checkUserCredentials } from '../controllers/users.js';
 
 const router = express.Router();
-await registerUser('kevin', '1234');
 
 router.route('/')
   .get((_req, res) => res.send('GET Auth router'))
