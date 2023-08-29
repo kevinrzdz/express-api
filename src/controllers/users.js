@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
-import { hashPassword, comparePassword } from '../crypto.js';
+import { comparePassword, hashPassword } from '../crypto.js';
 
-const userDatabase = {};
+let userDatabase = {};
 
 const registerUser = async (username, password) => {
   const hashedPassword = await hashPassword(password);
@@ -12,7 +12,8 @@ const registerUser = async (username, password) => {
 };
 
 const getUserFromUsername = (username) => {
-  const userId = Object.keys(userDatabase).find((id) => userDatabase[id].username === username);
+  const userId = Object.keys(userDatabase)
+    .find((id) => userDatabase[id].username === username);
   return userDatabase[userId];
 };
 
@@ -22,8 +23,11 @@ const checkUserCredentials = async (username, password) => {
     return undefined;
   }
 
-  const passwordsMatch = await comparePassword(password, user.password);
-  return passwordsMatch;
+  return comparePassword(password, user.password);
 };
 
-export { registerUser, checkUserCredentials };
+const clearUsers = () => {
+  userDatabase = {};
+};
+
+export { registerUser, checkUserCredentials, clearUsers };
