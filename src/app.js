@@ -9,10 +9,16 @@ authConfig(passport);
 const app = express();
 app.use(bodyParser.json());
 
+const PORT = process.env.PORT ?? 3000;
+
 app.get('/', passport.authenticate('jwt', { session: false }), (_req, res) => {
   res.send('hello world');
 });
 
 app.use('/auth', authRoutes);
 
-export default app;
+const server = app.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});
+
+export { app, server };
