@@ -3,7 +3,7 @@ import passport from 'passport';
 
 const init = () => {
   const opts = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt'),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT'),
     secretOrKey: 'secretPassword',
   };
 
@@ -11,7 +11,7 @@ const init = () => {
 };
 
 const protectWithJwt = (req, res, next) => {
-  if (req.path === '/' || req.path === '/auth/login') {
+  if (req.path === '/auth/login') {
     return next();
   }
   return passport.authenticate('jwt', { session: false })(req, res, next);
