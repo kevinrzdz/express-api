@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { comparePassword, hashPassword } from '../crypto.js';
+import { comparePassword, hashPassword } from '../tools/crypto.js';
 
 let userDatabase = {};
 

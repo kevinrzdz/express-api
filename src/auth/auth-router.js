@@ -1,6 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { checkUserCredentials } from '../controllers/users.js';
+import { checkUserCredentials } from './users.js';
 
 const router = express.Router();
 
