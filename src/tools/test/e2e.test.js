@@ -7,7 +7,7 @@ beforeAll(() => registerUser('kevin', '1234'));
 describe('/ endpoint testing suite', () => {
   it('GET should return 200 when jwt is valid', async () => {
     const loginResponse = await request(app)
-      .post('/auth/login')
+      .post('/login')
       .set('content-type', 'application/json')
       .send({
         user: 'kevin',

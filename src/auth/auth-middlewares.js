@@ -11,7 +11,7 @@ const init = () => {
 };
 
 const protectWithJwt = (req, res, next) => {
-  if (req.path === '/auth/login') {
+  if (req.path === '/login') {
     return next();
   }
   return passport.authenticate('jwt', { session: false })(req, res, next);

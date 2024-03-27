@@ -7,7 +7,7 @@ beforeAll(() => registerUser('kevin', '1234'));
 describe('/login endpoint testing suite', () => {
   it('POST should return 200 when successful login', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/login')
       .set('content-type', 'application/json')
       .send({
         user: 'kevin',
@@ -18,14 +18,14 @@ describe('/login endpoint testing suite', () => {
   });
 
   it('POST should return 400 when no data provided', async () => {
-    const response = await request(app).post('/auth/login');
+    const response = await request(app).post('/login');
 
     expect(response.status).toBe(400);
   });
 
   it('POST should return 400 when no username provided', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/login')
       .set('content-type', 'application/json')
       .send({ password: '1234' });
 
@@ -34,7 +34,7 @@ describe('/login endpoint testing suite', () => {
 
   it('POST should return 400 when no password provided', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/login')
       .set('content-type', 'application/json')
       .send({ user: 'kevin' });
 
@@ -43,7 +43,7 @@ describe('/login endpoint testing suite', () => {
 
   it('POST should return 401 when invalid credentials provided', async () => {
     const response = await request(app)
-      .post('/auth/login')
+      .post('/login')
       .set('content-type', 'application/json')
       .send({
         user: 'kevin',

@@ -4,7 +4,7 @@ import setUpMiddlewares from './tools/middlewares.js';
 
 const app = express();
 
-const PORT = process.env.PORT ?? 0;
+const PORT = process.env.PORT ?? 3000;
 
 setUpMiddlewares(app);
 
@@ -12,7 +12,7 @@ app.get('/', (_req, res) => {
   res.send('hello world');
 });
 
-app.use('/auth', authRoutes);
+app.use('/', authRoutes);
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
