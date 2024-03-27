@@ -18,16 +18,14 @@ describe('/ endpoint testing suite', () => {
       .get('/')
       .set('Authorization', `JWT ${loginResponse.body.token}`);
 
-    expect(response.status)
-      .toBe(200);
+    expect(response.status).toBe(200);
   });
 
   it('GET should return 401 when no jwt provided', async () => {
     const response = await request(app)
       .get('/');
 
-    expect(response.status)
-      .toBe(401);
+    expect(response.status).toBe(401);
   });
 
   it('GET should return 401 when invalid jwt provided', async () => {
@@ -35,8 +33,7 @@ describe('/ endpoint testing suite', () => {
       .get('/')
       .set('Authorization', 'JWT invalidToken');
 
-    expect(response.status)
-      .toBe(401);
+    expect(response.status).toBe(401);
   });
 });
 
