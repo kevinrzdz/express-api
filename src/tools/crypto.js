@@ -1,13 +1,7 @@
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 
-const hashPassword = async (plainTextPwd) => {
-  const hashedPwd = await hash(plainTextPwd, 10);
-  return hashedPwd;
-};
+const hashPassword = async (plainTextPwd) => hash(plainTextPwd, 10);
 
-const comparePassword = async (plainTextPwd, hashPwd) => {
-  const passwordsMatch = await compare(plainTextPwd, hashPwd);
-  return passwordsMatch;
-};
+const comparePassword = async (plainTextPwd, hashPwd) => compare(plainTextPwd, hashPwd);
 
 export { hashPassword, comparePassword };
