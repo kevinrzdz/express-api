@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { checkUserCredentials } from './users.js';
+import { checkUserCredentials, getUserIdFromUsername } from './users.js';
 
 const SECRET = process.env.JWT_SECRET || 'secretPassword';
 
@@ -17,7 +17,8 @@ const login = async (req, res, next) => {
         .json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: req.body.user }, SECRET);
+    const userId = getUserIdFromUsername(req.body.user);
+    const token = jwt.sign({ userId }, SECRET);
 
     return res.status(200)
       .json({ token });
