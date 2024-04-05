@@ -1,24 +1,28 @@
 import { v4 } from 'uuid';
 import { comparePassword, hashPassword } from '../tools/crypto.js';
+import { bootstrapTasks } from '../tasks/tasks.js';
 
 let userDatabase = {};
 
 const registerUser = async (username, password) => {
   const hashedPassword = await hashPassword(password);
-  userDatabase[v4()] = {
+  const userId = v4();
+
+  userDatabase[userId] = {
     username,
     password: hashedPassword,
   };
+
+  bootstrapTasks(userId);
 };
 
-const getUserFromUsername = (username) => {
-  const userId = Object.keys(userDatabase)
-    .find((id) => userDatabase[id].username === username);
-  return userDatabase[userId];
-};
+const getUser = (userId) => userDatabase[userId];
+const getUserIdFromUsername = (username) => Object.keys(userDatabase)
+  .find((id) => userDatabase[id].username === username);
 
-const checkUserCredentials = async (username, password) => {
-  const user = getUserFromUsername(username);
+const checkUserCredentials = (username, password) => {
+  const userId = getUserIdFromUsername(username);
+  const user = getUser(userId);
   if (!user) {
     return undefined;
   }
@@ -30,4 +34,6 @@ const clearUsers = () => {
   userDatabase = {};
 };
 
-export { registerUser, checkUserCredentials, clearUsers };
+export {
+  registerUser, getUser, getUserIdFromUsername, checkUserCredentials, clearUsers,
+};
