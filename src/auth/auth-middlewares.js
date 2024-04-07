@@ -3,7 +3,7 @@ import passport from 'passport';
 
 const init = () => {
   const opts = {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT'),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
     secretOrKey: 'secretPassword',
   };
 
