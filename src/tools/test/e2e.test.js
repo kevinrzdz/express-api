@@ -16,7 +16,7 @@ describe('/ endpoint testing suite', () => {
 
     const response = await request(app)
       .get('/')
-      .set('Authorization', `JWT ${loginResponse.body.token}`);
+      .set('Authorization', `Bearer ${loginResponse.body.token}`);
 
     expect(response.status).toBe(200);
   });
