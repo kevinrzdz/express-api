@@ -7,6 +7,8 @@ router.route('/').get(tasksController.getAllTasks);
 
 router.route('/').put(tasksController.setTasks);
 
+router.route('/').delete(tasksController.resetTasks);
+
 router.route('/:taskId').get(tasksController.getTask);
 
 router.route('/:taskId').put(tasksController.editTask);
