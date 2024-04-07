@@ -93,7 +93,18 @@ describe('/tasks endpoint testing suite', () => {
       .toEqual(newTaskName);
   });
 
-  it('DELETE should delete the specified task', async () => {
+  it('DELETE should delete all the tasks of the given user', async () => {
+    const initialGetRequest = await makeRequest('get', '/tasks');
+    expect(initialGetRequest.body.tasks).not.toHaveLength(0);
+
+    const deleteRequest = await makeRequest('delete', '/tasks');
+    expect(deleteRequest.statusCode).toBe(200);
+
+    const postDeleteGetRequest = await makeRequest('get', '/tasks');
+    expect(postDeleteGetRequest.body.tasks).toHaveLength(0);
+  });
+
+  it('DELETE /:taskId should delete the specified task', async () => {
     const taskToAdd = { name: 'Workout' };
     const addResponse = await makeRequest('post', '/tasks/create', taskToAdd);
 
