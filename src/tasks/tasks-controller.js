@@ -60,6 +60,12 @@ const editTask = (req, res) => {
   res.json({ task: newTask });
 };
 
+const resetTasks = (req, res) => {
+  const { userId } = req.user;
+  tasksClass.bootstrapTasks(userId);
+  res.send();
+};
+
 export {
-  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask,
+  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask, resetTasks,
 };
