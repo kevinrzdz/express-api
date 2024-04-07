@@ -4,6 +4,7 @@ import { clearUsers, registerUser } from '../../auth/users.js';
 
 let loginResponse;
 let createdTasks;
+let authorization;
 
 const createTaskSet = () => ([{ name: 'Take a shower' }, { name: 'Do dishes' }]);
 
@@ -17,7 +18,17 @@ beforeAll(async () => {
       user: 'kevin',
       password: '1234',
     });
+
+  authorization = `Bearer ${loginResponse.body.token}`;
 });
+
+const makeRequest = async (method, uri, data = null) => {
+  let req = request(app)[method](uri).set('Authorization', authorization);
+  if (data) {
+    req = req.send(data);
+  }
+  return req;
+};
 
 beforeEach(async () => {
   createdTasks = await request(app)
@@ -30,10 +41,7 @@ describe('/tasks endpoint testing suite', () => {
   it('PUT should replace tasks for the user', async () => {
     const newTasks = createTaskSet()
       .concat({ name: 'Go shopping' });
-    const tasksResponse = await request(app)
-      .put('/tasks')
-      .set('Authorization', `Bearer ${loginResponse.body.token}`)
-      .send({ tasks: newTasks });
+    const tasksResponse = await makeRequest('put', '/tasks', { tasks: newTasks });
 
     expect(tasksResponse.statusCode)
       .toBe(200);
@@ -46,9 +54,7 @@ describe('/tasks endpoint testing suite', () => {
   });
 
   it('GET should return all tasks for the given user', async () => {
-    const tasksResponse = await request(app)
-      .get('/tasks')
-      .set('Authorization', `Bearer ${loginResponse.body.token}`);
+    const tasksResponse = await makeRequest('get', '/tasks');
 
     expect(tasksResponse.statusCode)
       .toBe(200);
@@ -63,9 +69,7 @@ describe('/tasks endpoint testing suite', () => {
 
   it('GET /:taskId should return a specific task by id', async () => {
     const taskId = createdTasks.body.tasks[0].id;
-    const taskResponse = await request(app)
-      .get(`/tasks/${taskId}`)
-      .set('Authorization', `Bearer ${loginResponse.body.token}`);
+    const taskResponse = await makeRequest('get', `/tasks/${taskId}`);
 
     expect(taskResponse.statusCode)
       .toBe(200);
@@ -79,10 +83,7 @@ describe('/tasks endpoint testing suite', () => {
 
   it('POST should create a new task', async () => {
     const newTaskName = 'Walk the dog';
-    const tasksResponse = await request(app)
-      .post('/tasks/create')
-      .set('Authorization', `Bearer ${loginResponse.body.token}`)
-      .send({ name: newTaskName });
+    const tasksResponse = await makeRequest('post', '/tasks/create', { name: newTaskName });
 
     expect(tasksResponse.statusCode)
       .toBe(200);
@@ -94,23 +95,16 @@ describe('/tasks endpoint testing suite', () => {
 
   it('DELETE should delete the specified task', async () => {
     const taskToAdd = { name: 'Workout' };
-    const addResponse = await request(app)
-      .post('/tasks/create')
-      .set('Authorization', `Bearer ${loginResponse.body.token}`)
-      .send(taskToAdd);
+    const addResponse = await makeRequest('post', '/tasks/create', taskToAdd);
 
     const taskIdToDelete = addResponse.body.task.id;
 
-    const deleteResponse = await request(app)
-      .delete(`/tasks/${taskIdToDelete}`)
-      .set('Authorization', `Bearer ${loginResponse.body.token}`);
+    const deleteResponse = await makeRequest('delete', `/tasks/${taskIdToDelete}`);
 
     expect(deleteResponse.statusCode)
       .toBe(200);
 
-    const getResponse = await request(app)
-      .get('/tasks')
-      .set('Authorization', `Bearer ${loginResponse.body.token}`);
+    const getResponse = await makeRequest('get', '/tasks');
 
     expect(getResponse.body.tasks)
       .not
@@ -121,10 +115,8 @@ describe('/tasks endpoint testing suite', () => {
     const taskId = createdTasks.body.tasks[0].id;
     const oldTask = createdTasks.body.tasks[0];
     const taskName = 'Workout';
-    const tasksResponse = await request(app)
-      .put(`/tasks/${taskId}`)
-      .set('Authorization', `Bearer ${loginResponse.body.token}`)
-      .send({ name: taskName });
+
+    const tasksResponse = await makeRequest('put', `/tasks/${taskId}`, { name: taskName });
 
     expect(tasksResponse.statusCode)
       .toBe(200);
