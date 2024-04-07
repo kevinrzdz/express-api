@@ -5,10 +5,7 @@ import { clearUsers, registerUser } from '../../auth/users.js';
 let loginResponse;
 let createdTasks;
 
-const createTaskSet = () => ([
-  { name: 'Take a shower' },
-  { name: 'Do dishes' },
-]);
+const createTaskSet = () => ([{ name: 'Take a shower' }, { name: 'Do dishes' }]);
 
 beforeAll(async () => {
   await registerUser('kevin', '1234');
@@ -30,7 +27,7 @@ beforeEach(async () => {
 });
 
 describe('/tasks endpoint testing suite', () => {
-  it('should replace tasks for the user', async () => {
+  it('PUT should replace tasks for the user', async () => {
     const newTasks = createTaskSet()
       .concat({ name: 'Go shopping' });
     const tasksResponse = await request(app)
@@ -43,13 +40,12 @@ describe('/tasks endpoint testing suite', () => {
     expect(tasksResponse.body.tasks)
       .toHaveLength(newTasks.length);
 
-    // Create an array of expectations that only looks for the `name` property
-    const expectedTasksWithNamesOnly = newTasks.map((task) => expect.objectContaining({ name: task.name }));
+    const expectedTasks = newTasks.map((task) => expect.objectContaining({ name: task.name }));
     expect(tasksResponse.body.tasks)
-      .toEqual(expect.arrayContaining(expectedTasksWithNamesOnly));
+      .toEqual(expect.arrayContaining(expectedTasks));
   });
 
-  it('should return all tasks for the given user', async () => {
+  it('GET should return all tasks for the given user', async () => {
     const tasksResponse = await request(app)
       .get('/tasks')
       .set('Authorization', `Bearer ${loginResponse.body.token}`);
@@ -65,7 +61,7 @@ describe('/tasks endpoint testing suite', () => {
       });
   });
 
-  it('should return a specific task by id', async () => {
+  it('GET /:taskId should return a specific task by id', async () => {
     const taskId = createdTasks.body.tasks[0].id;
     const taskResponse = await request(app)
       .get(`/tasks/${taskId}`)
@@ -81,7 +77,7 @@ describe('/tasks endpoint testing suite', () => {
       .toBe('Take a shower');
   });
 
-  it('should create a new task', async () => {
+  it('POST should create a new task', async () => {
     const newTaskName = 'Walk the dog';
     const tasksResponse = await request(app)
       .post('/tasks/create')
@@ -96,7 +92,7 @@ describe('/tasks endpoint testing suite', () => {
       .toEqual(newTaskName);
   });
 
-  it('should delete the specified task', async () => {
+  it('DELETE should delete the specified task', async () => {
     const taskToAdd = { name: 'Workout' };
     const addResponse = await request(app)
       .post('/tasks/create')
@@ -118,9 +114,25 @@ describe('/tasks endpoint testing suite', () => {
 
     expect(getResponse.body.tasks)
       .not
-      .toContainEqual(
-        expect.objectContaining({ id: taskIdToDelete }),
-      );
+      .toContainEqual(expect.objectContaining({ id: taskIdToDelete }));
+  });
+
+  it('PUT /:taskId should edit the given task', async () => {
+    const taskId = createdTasks.body.tasks[0].id;
+    const oldTask = createdTasks.body.tasks[0];
+    const taskName = 'Workout';
+    const tasksResponse = await request(app)
+      .put(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${loginResponse.body.token}`)
+      .send({ name: taskName });
+
+    expect(tasksResponse.statusCode)
+      .toBe(200);
+    expect(tasksResponse.body.task)
+      .not
+      .toContainEqual(oldTask);
+    expect(tasksResponse.body.task.name)
+      .toEqual(taskName);
   });
 });
 

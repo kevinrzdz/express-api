@@ -17,7 +17,8 @@ const getTask = (req, res) => {
   const task = tasksClass.getTask(userId, taskId);
 
   if (!task) {
-    res.status(404).json({ message: 'Task not found' });
+    res.status(404)
+      .json({ message: 'Task not found' });
   } else {
     res.json({ task });
   }
@@ -49,6 +50,16 @@ const deleteTask = (req, res) => {
   res.send();
 };
 
+const editTask = (req, res) => {
+  const { userId } = req.user;
+  const { taskId } = req.params;
+  const { name } = req.body;
+
+  const newTask = tasksClass.editTask(userId, taskId, name);
+
+  res.json({ task: newTask });
+};
+
 export {
-  getAllTasks, getTask, addTask, setTasks, deleteTask,
+  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask,
 };
