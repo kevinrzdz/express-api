@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { comparePassword, hashPassword } from '../tools/crypto.js';
-import { bootstrapTasks } from '../tasks/tasks.https.js';
+import { bootstrapTasks } from '../tasks/tasks.http.js';
 
 let userDatabase = {};
 
