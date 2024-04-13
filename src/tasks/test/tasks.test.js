@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../../app.js';
-import { clearUsers, registerUser } from '../../auth/users.js';
+import { clearUsers, registerUser } from '../../auth/users.https.js';
 
 let loginResponse;
 let createdTasks;

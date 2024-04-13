@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { checkUserCredentials, getUserIdFromUsername } from './users.js';
+import { checkUserCredentials, getUserIdFromUsername } from './users.https.js';
 
 const SECRET = process.env.JWT_SECRET || 'secretPassword';
 
