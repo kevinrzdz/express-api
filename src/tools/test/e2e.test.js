@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app, server } from '../../app.js';
-import { clearUsers, registerUser } from '../../auth/users.http.js';
+import { clearUsers, registerUser } from '../../auth/users.controller.js';
 
 beforeAll(() => registerUser('kevin', '1234'));
 

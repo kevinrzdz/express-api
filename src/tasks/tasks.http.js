@@ -1,52 +1,71 @@
-const tasksDatabase = {};
-let taskIdCounter = 0;
+import * as tasksHttp from './tasks.controller.js';
+import { getUser } from '../auth/users.controller.js';
 
-const bootstrapTasks = (userId) => {
-  tasksDatabase[userId] = [];
-};
+const getAllTasks = (req, res) => {
+  const { userId } = req.user;
+  const user = getUser(userId);
 
-const getAllTasks = (userId) => tasksDatabase[userId];
-
-const getTask = (userId, taskId) => tasksDatabase[userId]
-  .find((task) => task.id === Number(taskId));
-
-const addTask = (userId, taskName) => {
-  const newTaskId = taskIdCounter;
-  taskIdCounter += 1;
-  const newTask = {
-    id: newTaskId,
-    name: taskName,
-  };
-  tasksDatabase[userId].push(newTask);
-  return newTask;
-};
-
-const setTasks = (userId, tasksFromRequest) => {
-  tasksDatabase[userId] = [];
-
-  tasksFromRequest.forEach((task) => {
-    tasksDatabase[userId].push({
-      id: taskIdCounter += 1,
-      name: task.name,
-    });
+  res.json({
+    user: user.username,
+    tasks: tasksHttp.getAllTasks(userId),
   });
-
-  return tasksDatabase[userId];
 };
 
-const deleteTask = (userId, taskId) => {
-  tasksDatabase[userId] = tasksDatabase[userId].filter((task) => task.id !== Number(taskId));
+const getTask = (req, res) => {
+  const { userId } = req.user;
+  const { taskId } = req.params;
+  const task = tasksHttp.getTask(userId, taskId);
+
+  if (!task) {
+    res.status(404)
+      .json({ message: 'Task not found' });
+  } else {
+    res.json({ task });
+  }
 };
 
-const editTask = (userId, taskId, taskName) => {
-  const foundTask = tasksDatabase[userId]
-    .find((task) => task.id === Number(taskId));
+const addTask = (req, res) => {
+  const { userId } = req.user;
+  const { name } = req.body;
+  const newTask = tasksHttp.addTask(userId, name);
 
-  foundTask.name = taskName;
+  res.json({ task: newTask });
+};
 
-  return foundTask;
+const setTasks = (req, res) => {
+  const { userId } = req.user;
+  const { tasks: tasksFromRequest } = req.body;
+
+  const updatedTasks = tasksHttp.setTasks(userId, tasksFromRequest);
+
+  res.json({ tasks: updatedTasks });
+};
+
+const deleteTask = (req, res) => {
+  const { userId } = req.user;
+  const { taskId } = req.params;
+
+  tasksHttp.deleteTask(userId, taskId);
+
+  res.send();
+};
+
+const editTask = (req, res) => {
+  const { userId } = req.user;
+  const { taskId } = req.params;
+  const { name } = req.body;
+
+  const newTask = tasksHttp.editTask(userId, taskId, name);
+
+  res.json({ task: newTask });
+};
+
+const resetTasks = (req, res) => {
+  const { userId } = req.user;
+  tasksHttp.bootstrapTasks(userId);
+  res.send();
 };
 
 export {
-  bootstrapTasks, getAllTasks, getTask, addTask, setTasks, deleteTask, editTask,
+  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask, resetTasks,
 };
