@@ -1,71 +1,72 @@
-import * as tasksController from './tasks.controller.js';
-import { getUser } from '../auth/users.controller.js';
+import * as tasksController from './tasks.controller.js'
+import { getUser } from '../auth/users.controller.js'
 
-const getAllTasks = (req, res) => {
-  const { userId } = req.user;
-  const user = getUser(userId);
+const getAllTasks = async (req, res) => {
+  const { userId } = req.user
+  const user = getUser(userId)
+  const tasks = await tasksController.getAllTasks(userId)
 
   res.json({
     user: user.username,
-    tasks: tasksController.getAllTasks(userId),
-  });
-};
+    tasks
+  })
+}
 
 const getTask = (req, res) => {
-  const { userId } = req.user;
-  const { taskId } = req.params;
-  const task = tasksController.getTask(userId, taskId);
+  const { userId } = req.user
+  const { taskId } = req.params
+  const task = tasksController.getTask(userId, taskId)
 
   if (!task) {
     res.status(404)
-      .json({ message: 'Task not found' });
+      .json({ message: 'Task not found' })
   } else {
-    res.json({ task });
+    res.json({ task })
   }
-};
+}
 
-const addTask = (req, res) => {
-  const { userId } = req.user;
-  const { name } = req.body;
-  const newTask = tasksController.addTask(userId, name);
+const addTask = async (req, res) => {
+  const { userId } = req.user
+  const { name } = req.body
+  const newTask = await tasksController.addTask(userId, name)
 
-  res.json({ task: newTask });
-};
+  res.json({ task: newTask })
+}
 
 const setTasks = (req, res) => {
-  const { userId } = req.user;
-  const { tasks: tasksFromRequest } = req.body;
+  const { userId } = req.user
+  const { tasks: tasksFromRequest } = req.body
 
-  const updatedTasks = tasksController.setTasks(userId, tasksFromRequest);
+  const updatedTasks = tasksController.setTasks(userId, tasksFromRequest)
 
-  res.json({ tasks: updatedTasks });
-};
+  res.json({ tasks: updatedTasks })
+}
 
 const deleteTask = (req, res) => {
-  const { userId } = req.user;
-  const { taskId } = req.params;
+  const { userId } = req.user
+  const { taskId } = req.params
 
-  tasksController.deleteTask(userId, taskId);
+  tasksController.deleteTask(userId, taskId)
 
-  res.send();
-};
+  res.send()
+}
 
 const editTask = (req, res) => {
-  const { userId } = req.user;
-  const { taskId } = req.params;
-  const { name } = req.body;
+  const { userId } = req.user
+  const { taskId } = req.params
+  const { name } = req.body
 
-  const newTask = tasksController.editTask(userId, taskId, name);
+  const newTask = tasksController.editTask(userId, taskId, name)
 
-  res.json({ task: newTask });
-};
+  res.json({ task: newTask })
+}
 
 const resetTasks = (req, res) => {
-  const { userId } = req.user;
-  tasksController.bootstrapTasks(userId);
-  res.send();
-};
+  const { userId } = req.user
+  tasksController.bootstrapTasks(userId)
+  res.send()
+}
 
 export {
-  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask, resetTasks,
-};
+  getAllTasks, getTask, addTask, setTasks, deleteTask, editTask, resetTasks
+}

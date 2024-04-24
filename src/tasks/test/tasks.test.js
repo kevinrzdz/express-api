@@ -1,145 +1,145 @@
-import request from 'supertest';
-import { app, server } from '../../app.js';
-import { clearUsers, registerUser } from '../../auth/users.controller.js';
+import request from 'supertest'
+import { app, server } from '../../app.js'
+import { clearUsers, registerUser } from '../../auth/users.controller.js'
 
-let loginResponse;
-let createdTasks;
-let authorization;
+let loginResponse
+let createdTasks
+let authorization
 
-const createTaskSet = () => ([{ name: 'Take a shower' }, { name: 'Do dishes' }]);
+const createTaskSet = () => ([{ name: 'Take a shower' }, { name: 'Do dishes' }])
 
 beforeAll(async () => {
-  await registerUser('kevin', '1234');
+  await registerUser('kevin', '1234')
 
   loginResponse = await request(app)
     .post('/login')
     .set('content-type', 'application/json')
     .send({
       user: 'kevin',
-      password: '1234',
-    });
+      password: '1234'
+    })
 
-  authorization = `Bearer ${loginResponse.body.token}`;
-});
+  authorization = `Bearer ${loginResponse.body.token}`
+})
 
 const makeRequest = async (method, uri, data = null) => {
-  let req = request(app)[method](uri).set('Authorization', authorization);
+  let req = request(app)[method](uri).set('Authorization', authorization)
   if (data) {
-    req = req.send(data);
+    req = req.send(data)
   }
-  return req;
-};
+  return req
+}
 
 beforeEach(async () => {
   createdTasks = await request(app)
     .put('/tasks')
     .set('Authorization', `Bearer ${loginResponse.body.token}`)
-    .send({ tasks: createTaskSet() });
-});
+    .send({ tasks: createTaskSet() })
+})
 
 describe('/tasks endpoint testing suite', () => {
   it('PUT should replace tasks for the user', async () => {
     const newTasks = createTaskSet()
-      .concat({ name: 'Go shopping' });
-    const tasksResponse = await makeRequest('put', '/tasks', { tasks: newTasks });
+      .concat({ name: 'Go shopping' })
+    const tasksResponse = await makeRequest('put', '/tasks', { tasks: newTasks })
 
     expect(tasksResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
     expect(tasksResponse.body.tasks)
-      .toHaveLength(newTasks.length);
+      .toHaveLength(newTasks.length)
 
-    const expectedTasks = newTasks.map((task) => expect.objectContaining({ name: task.name }));
+    const expectedTasks = newTasks.map((task) => expect.objectContaining({ name: task.name }))
     expect(tasksResponse.body.tasks)
-      .toEqual(expect.arrayContaining(expectedTasks));
-  });
+      .toEqual(expect.arrayContaining(expectedTasks))
+  })
 
   it('GET should return all tasks for the given user', async () => {
-    const tasksResponse = await makeRequest('get', '/tasks');
+    const tasksResponse = await makeRequest('get', '/tasks')
 
     expect(tasksResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
     expect(tasksResponse.body.tasks)
-      .toHaveLength(createTaskSet().length);
+      .toHaveLength(createTaskSet().length)
     createTaskSet()
       .forEach((task, index) => {
         expect(tasksResponse.body.tasks[index].name)
-          .toBe(task.name);
-      });
-  });
+          .toBe(task.name)
+      })
+  })
 
   it('GET /:taskId should return a specific task by id', async () => {
-    const taskId = createdTasks.body.tasks[0].id;
-    const taskResponse = await makeRequest('get', `/tasks/${taskId}`);
+    const taskId = createdTasks.body.tasks[0].id
+    const taskResponse = await makeRequest('get', `/tasks/${taskId}`)
 
     expect(taskResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
     expect(taskResponse.body.task)
-      .toBeDefined();
+      .toBeDefined()
     expect(taskResponse.body.task.id)
-      .toBe(taskId);
+      .toBe(taskId)
     expect(taskResponse.body.task.name)
-      .toBe('Take a shower');
-  });
+      .toBe('Take a shower')
+  })
 
   it('POST should create a new task', async () => {
-    const newTaskName = 'Walk the dog';
-    const tasksResponse = await makeRequest('post', '/tasks/create', { name: newTaskName });
+    const newTaskName = 'Walk the dog'
+    const tasksResponse = await makeRequest('post', '/tasks/create', { name: newTaskName })
 
     expect(tasksResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
     expect(tasksResponse.body.task)
-      .toBeDefined();
+      .toBeDefined()
     expect(tasksResponse.body.task.name)
-      .toEqual(newTaskName);
-  });
+      .toEqual(newTaskName)
+  })
 
   it('DELETE should delete all the tasks of the given user', async () => {
-    const initialGetRequest = await makeRequest('get', '/tasks');
-    expect(initialGetRequest.body.tasks).not.toHaveLength(0);
+    const initialGetRequest = await makeRequest('get', '/tasks')
+    expect(initialGetRequest.body.tasks).not.toHaveLength(0)
 
-    const deleteRequest = await makeRequest('delete', '/tasks');
-    expect(deleteRequest.statusCode).toBe(200);
+    const deleteRequest = await makeRequest('delete', '/tasks')
+    expect(deleteRequest.statusCode).toBe(200)
 
-    const postDeleteGetRequest = await makeRequest('get', '/tasks');
-    expect(postDeleteGetRequest.body.tasks).toHaveLength(0);
-  });
+    const postDeleteGetRequest = await makeRequest('get', '/tasks')
+    expect(postDeleteGetRequest.body.tasks).toHaveLength(0)
+  })
 
   it('DELETE /:taskId should delete the specified task', async () => {
-    const taskToAdd = { name: 'Workout' };
-    const addResponse = await makeRequest('post', '/tasks/create', taskToAdd);
+    const taskToAdd = { name: 'Workout' }
+    const addResponse = await makeRequest('post', '/tasks/create', taskToAdd)
 
-    const taskIdToDelete = addResponse.body.task.id;
+    const taskIdToDelete = addResponse.body.task.id
 
-    const deleteResponse = await makeRequest('delete', `/tasks/${taskIdToDelete}`);
+    const deleteResponse = await makeRequest('delete', `/tasks/${taskIdToDelete}`)
 
     expect(deleteResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
 
-    const getResponse = await makeRequest('get', '/tasks');
+    const getResponse = await makeRequest('get', '/tasks')
 
     expect(getResponse.body.tasks)
       .not
-      .toContainEqual(expect.objectContaining({ id: taskIdToDelete }));
-  });
+      .toContainEqual(expect.objectContaining({ id: taskIdToDelete }))
+  })
 
   it('PUT /:taskId should edit the given task', async () => {
-    const taskId = createdTasks.body.tasks[0].id;
-    const oldTask = createdTasks.body.tasks[0];
-    const taskName = 'Workout';
+    const taskId = createdTasks.body.tasks[0].id
+    const oldTask = createdTasks.body.tasks[0]
+    const taskName = 'Workout'
 
-    const tasksResponse = await makeRequest('put', `/tasks/${taskId}`, { name: taskName });
+    const tasksResponse = await makeRequest('put', `/tasks/${taskId}`, { name: taskName })
 
     expect(tasksResponse.statusCode)
-      .toBe(200);
+      .toBe(200)
     expect(tasksResponse.body.task)
       .not
-      .toContainEqual(oldTask);
+      .toContainEqual(oldTask)
     expect(tasksResponse.body.task.name)
-      .toEqual(taskName);
-  });
-});
+      .toEqual(taskName)
+  })
+})
 
 afterAll((done) => {
-  clearUsers();
-  server.close(done);
-});
+  clearUsers()
+  server.close(done)
+})

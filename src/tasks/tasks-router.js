@@ -1,19 +1,19 @@
-import express from 'express';
-import * as tasksController from './tasks.http.js';
+import express from 'express'
+import * as tasksController from './tasks.http.js'
 
-const router = express.Router();
+const router = express.Router()
 
 router.route('/')
   .get(tasksController.getAllTasks)
   .put(tasksController.setTasks)
-  .delete(tasksController.resetTasks);
+  .delete(tasksController.resetTasks)
 
 router.route('/:taskId')
   .get(tasksController.getTask)
   .put(tasksController.editTask)
-  .delete(tasksController.deleteTask);
+  .delete(tasksController.deleteTask)
 
 router.route('/create')
-  .post(tasksController.addTask);
+  .post(tasksController.addTask)
 
-export default router;
+export default router

@@ -1,8 +1,8 @@
-import request from 'supertest';
-import { app, server } from '../../app.js';
-import { clearUsers, registerUser } from '../users.controller.js';
+import request from 'supertest'
+import { app, server } from '../../app.js'
+import { clearUsers, registerUser } from '../users.controller.js'
 
-beforeAll(() => registerUser('kevin', '1234'));
+beforeAll(() => registerUser('kevin', '1234'))
 
 describe('/login endpoint testing suite', () => {
   it('POST should return 200 when successful login', async () => {
@@ -11,35 +11,35 @@ describe('/login endpoint testing suite', () => {
       .set('content-type', 'application/json')
       .send({
         user: 'kevin',
-        password: '1234',
-      });
+        password: '1234'
+      })
 
-    expect(response.status).toBe(200);
-  });
+    expect(response.status).toBe(200)
+  })
 
   it('POST should return 400 when no data provided', async () => {
-    const response = await request(app).post('/login');
+    const response = await request(app).post('/login')
 
-    expect(response.status).toBe(400);
-  });
+    expect(response.status).toBe(400)
+  })
 
   it('POST should return 400 when no username provided', async () => {
     const response = await request(app)
       .post('/login')
       .set('content-type', 'application/json')
-      .send({ password: '1234' });
+      .send({ password: '1234' })
 
-    expect(response.status).toBe(400);
-  });
+    expect(response.status).toBe(400)
+  })
 
   it('POST should return 400 when no password provided', async () => {
     const response = await request(app)
       .post('/login')
       .set('content-type', 'application/json')
-      .send({ user: 'kevin' });
+      .send({ user: 'kevin' })
 
-    expect(response.status).toBe(400);
-  });
+    expect(response.status).toBe(400)
+  })
 
   it('POST should return 401 when invalid credentials provided', async () => {
     const response = await request(app)
@@ -47,14 +47,14 @@ describe('/login endpoint testing suite', () => {
       .set('content-type', 'application/json')
       .send({
         user: 'kevin',
-        password: '12',
-      });
+        password: '12'
+      })
 
-    expect(response.status).toBe(401);
-  });
-});
+    expect(response.status).toBe(401)
+  })
+})
 
 afterAll((done) => {
-  clearUsers();
-  server.close(done);
-});
+  clearUsers()
+  server.close(done)
+})
